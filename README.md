@@ -15,7 +15,7 @@ You can safely re-run the application.
 
 ### If you are on OS X / macOS
 You can download a pre-build binary [here](https://github.com/morphar/SmugMugMugger/releases).  
-Or [direct link](https://github.com/morphar/SmugMugMugger/releases/download/0.1.0/SmugMugMugger) to the binary.
+Or [direct link](https://github.com/morphar/SmugMugMugger/releases/download/0.1.0/smugmugmugger.zip) to the binary.
 
 In the Finder, double click on the downloaded file.
 
