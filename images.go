@@ -226,8 +226,14 @@ func fetchFiles(mediaList []Media) {
 	progress.ShowTimeLeft = true
 	progress.Start()
 
+	split := false
+	if len(mediaList) > SPLIT_LIMIT {
+		split = true
+	}
+
 	fails := 0
 	success := 0
+
 	for i, media := range mediaList {
 		if mediaList[i].Status == "done" {
 			success += 1
@@ -239,7 +245,7 @@ func fetchFiles(mediaList []Media) {
 			continue
 		}
 
-		if i > 0 && i%10 == 0 {
+		if i > 0 && i%100 == 0 {
 			mediaLock.Lock()
 			mediaJSON, _ := json.Marshal(mediaList)
 			err = ioutil.WriteFile(mediaJSONPath, mediaJSON, filePerm)
@@ -258,7 +264,11 @@ func fetchFiles(mediaList []Media) {
 			mediaLock.Lock()
 			mediaList[index].Status = "started"
 			mediaLock.Unlock()
-			fetchMedia(&media)
+			extraPath := ""
+			if split {
+				extraPath = strconv.Itoa((index / SPLIT_LIMIT) + 1)
+			}
+			fetchMedia(&media, extraPath)
 			mediaLock.Lock()
 			mediaList[index] = media
 			if media.Status == "done" {
@@ -296,11 +306,19 @@ func fetchFiles(mediaList []Media) {
 	fmt.Println("\tFailed: ", fails)
 }
 
-func fetchMedia(media *Media) {
+func fetchMedia(media *Media, extraPath string) {
 	media.Retries += 1
 	media.Status = "started"
 
-	filePath := mediaPath + "/" + media.ImageKey + "." + media.Format
+	filePath := mediaPath
+	if extraPath != "" {
+		filePath += "/" + extraPath
+		err := os.MkdirAll(filePath, pathPerm)
+		if err != nil {
+			return
+		}
+	}
+	filePath += "/" + media.ImageKey + "." + media.Format
 
 	out, err := os.Create(filePath)
 	if err != nil {

@@ -17,6 +17,7 @@ const (
 	OAUTH_ORIGIN = "https://secure.smugmug.com"
 	API_BASE     = "https://api.smugmug.com"
 	API_ORIGIN   = API_BASE + "/api/v2"
+	SPLIT_LIMIT  = 10000
 )
 
 var (
